@@ -1,17 +1,22 @@
-/**
- * Entry point for running the backend.
- */
+//
+// Entry point for running production mode.
+//
+
+const express = require("express");
+const path = require("path");
+
+const server = require("./server-common");
+
 (function initialize() {
-    const express = require("express");
+
     const app = express();
-    const server = require("./server-common");
+
     server.initializeApi(app);
     initializeStatic(app, express);
     server.start(app);
 })();
 
 function initializeStatic(app, express) {
-    const path = require("path");
     app.use(express.static(path.join(__dirname, "..", "dist")));
     // All else to index.html to support non-root access.
     app.get("/*", (req, res) => {

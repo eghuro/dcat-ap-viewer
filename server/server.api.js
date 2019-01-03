@@ -1,10 +1,12 @@
-/**
- * Entry point for running the backend.
- */
+//
+// Entry point for running only the API.
+//
+
+const express = require("express");
+const server = require("./server-common");
+
 (function initialize() {
-    const express = require("express");
     const app = express();
-    const server = require("./server.common");
     server.initializeApi(app);
     server.start(app);
 })();

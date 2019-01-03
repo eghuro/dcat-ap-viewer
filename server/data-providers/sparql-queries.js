@@ -1,4 +1,14 @@
-function createDatasetSparqlQuery(iri) {
+const config = require("../server-configuration");
+
+module.exports = {
+    "createDatasetQuery": createDatasetQuery,
+    "createDistributionQuery": createDistributionQuery,
+    "createCodeListQuery": createCodeListQuery,
+    "createDatasetsListQuery": createDatasetsListQuery,
+    "createDatasetListItemQuery": createDatasetListItemQuery
+};
+
+function createDatasetQuery(iri) {
     return `
 PREFIX dcat: <http://www.w3.org/ns/dcat#> 
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -70,7 +80,7 @@ CONSTRUCT {
 }`;
 }
 
-function createDistributionSparqlQuery(iri) {
+function createDistributionQuery(iri) {
     return `
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -90,8 +100,78 @@ CONSTRUCT {
 }`;
 }
 
+function createCodeListQuery(iri) {
+    // TODO Use more restricted sparql - add type, restrict predicates (languages).
+    return `
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 
-module.exports = {
-    "dataset": createDatasetSparqlQuery,
-    "distribution": createDistributionSparqlQuery
-};
+CONSTRUCT {
+    ?item ?p ?o ;
+} WHERE {
+    ?item ?p ?o ;
+     VALUES (?item) { (<` + iri + `>) }
+}`;
+}
+
+function createDatasetsListQuery(query) {
+    return `
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT DISTINCT ?dataset WHERE {
+  <` + config.data.catalog + `> dcat:dataset ?dataset .
+
+  ?dataset a <http://www.w3.org/ns/dcat#Dataset> ;
+    dcterms:title ?title .
+
+} 
+ORDER BY DESC(?title)
+LIMIT 10
+OFFSET 10    
+`;
+}
+
+function createDatasetListItemQuery(datasets) {
+    const values = datasets.map((iri) => "    ( <" + iri + "> )").join("\n");
+    return `
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+CONSTRUCT { 
+  ?dataset a <http://www.w3.org/ns/dcat#Dataset> ;
+    dcterms:title ?title ;
+    dcterms:description ?description ;
+    <http://localhost/formatName> ?formatName ;
+    <http://localhost/publisherName> ?publisherName .
+      
+} WHERE {
+  ?dataset a <http://www.w3.org/ns/dcat#Dataset> ;
+    dcterms:publisher ?publisher ;
+    dcterms:title ?title ;
+    dcat:distribution ?distribution .
+
+  OPTIONAL {
+    ?dataset dcterms:description ?description .
+  }
+
+  OPTIONAL {
+    ?dataset dcterms:publisher ?publisher .
+    # Adding a foaf:Agent would slow down the query.
+    ?publisher foaf:name ?publisherName .
+  }
+  
+  OPTIONAL {
+    ?distribution dcterms:format ?format .
+    ?format skos:prefLabel ?formatName .
+  }
+  
+  VALUES (?dataset) {
+    ` + values + `
+  }
+}     
+`;
+}
