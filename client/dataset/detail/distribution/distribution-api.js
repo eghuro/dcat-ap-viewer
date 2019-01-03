@@ -3,17 +3,9 @@ import {fetchJson} from "@/app-services/http-request";
 
 export function fetchDistributionDetail(iri) {
     const url = "./api/v1/resource/distribution?iri=" + encodeURI(iri);
-    return fetchJson(url).then((response) => {
-        return normalizeData(response.json);
-    });
-}
-
-function normalizeData(data) {
-    if (REPOSITORY_TYPE === "COUCHDB") {
-        return {"@graph": data["jsonld"]};
-    } else {
-        return data;
-    }
+    return fetchJson(url).then((response) => ({
+        "@graph": response.json.json["jsonld"]
+    }));
 }
 
 // TODO Generalize and merge.

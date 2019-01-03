@@ -4,8 +4,7 @@ import {AsyncTypeahead} from "react-bootstrap-typeahead";
 import {InputGroup, InputGroupAddon, InputGroupText, Button} from "reactstrap";
 
 import {getString} from "@/app-services/strings";
-import {constructTypeaheadUrl} from "@/dataset/solr-api";
-import {fetchJson} from "@/app-services/http-request";
+import {fetchTitlesForTypeahead} from "@/dataset/dataset-api";
 
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "react-bootstrap-typeahead/css/Typeahead-bs4.css";
@@ -68,7 +67,7 @@ class SearchBox extends React.Component {
                     searchText={getString("search.searching")}
                     emptyLabel={getString("search.no_data_found")}
                     ref={(ref) => this.typeahead = ref}
-                    />
+                />
                 <InputGroupAddon addonType="append">
                     <Button color="primary"
                             onClick={this.onSearch}>
@@ -85,20 +84,19 @@ class SearchBox extends React.Component {
         }
         this.setState({"isLoading": true});
 
-        // TODO Move to some sort of API/action file?
-        const url = constructTypeaheadUrl(textQuery, this.props.query);
-        return fetchJson(url).then((data) => {
-            const options = data.json.response.docs.map((item) => item.title);
-            this.setState({
-                "isLoading": false,
-                "options": options
+        return fetchTitlesForTypeahead(this.props.query, textQuery)
+            .then((data) => {
+                const options = data.json.data.map((item) => item.title);
+                this.setState({
+                    "isLoading": false,
+                    "options": options
+                });
+            }).catch(() => {
+                this.setState({
+                    "isLoading": false,
+                    "options": []
+                });
             });
-        }).catch(() => {
-            this.setState({
-                "isLoading": false,
-                "options": []
-            });
-        });
     }
 
     onKeyDown(event) {
@@ -162,9 +160,9 @@ class SearchBox extends React.Component {
     }
 
     clear() {
-      this.typeahead.getInstance().clear();
-      this.lastSubmittedValue = undefined;
-      this.currentInputValue = undefined;
+        this.typeahead.getInstance().clear();
+        this.lastSubmittedValue = undefined;
+        this.currentInputValue = undefined;
     }
 
 }

@@ -1,12 +1,11 @@
 import {
-    fetchJson,
     isFetching
 } from "@/app-services/http-request";
 import {
     addLoaderStatusOn,
     addLoaderStatusOff
 } from "@/app-ui/loading-indicator";
-import {constructSearchQueryUrl} from "./../solr-api";
+import {fetchDatasets} from "../dataset-api";
 import {parse as parseQueryString} from "query-string";
 import {push} from "react-router-redux";
 import {getQuery, PAGE_QUERY} from "@/app/navigation";
@@ -21,12 +20,12 @@ export const SET_LIST_QUERY_STRING = "SET_LIST_QUERY_STRING";
 export function fetchData(query) {
     return (dispatch) => {
         dispatch(fetchDataRequest());
-        const url = constructSearchQueryUrl(query);
-        fetchJson(url).then((response) => {
+        fetchDatasets(query).then((response) => {
             dispatch(fetchDataSuccess(response.json));
             fetchLabels(dispatch, response);
-        }).catch((response) => {
-            dispatch(fetchDataFailed(response));
+        }).catch((error) => {
+            console.log(error);
+            dispatch(fetchDataFailed(error));
         });
     };
 }
@@ -86,7 +85,7 @@ function createSearchString(query) {
 }
 
 function fetchLabels(dispatch, response) {
-    const theme = response.json["facet_counts"]["facet_fields"]["theme"];
+    const theme = response.json["facets"]["themes"];
     for (let index = 0; index < theme.length; index += 2) {
         dispatch(fetchLabel(theme[index]));
     }

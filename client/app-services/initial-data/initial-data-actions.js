@@ -3,7 +3,7 @@ import {
     addLoaderStatusOff
 } from "app-ui/loading-indicator/index";
 import {fetchJson} from "../http-request";
-import {parseFacetFromSolrResponse} from "../solr";
+import {nameCountArrayToJsonLd} from "app-services/solr";
 
 export const FETCH_INITIAL_DATA_REQUEST = "FETCH_INITIAL_DATA_REQUEST";
 export const FETCH_INITIAL_DATA_SUCCESS = "FETCH_INITIAL_DATA_SUCCESS";
@@ -17,13 +17,13 @@ export const FETCH_INITIAL_SOLR_FAILED = "FETCH_INITIAL_SOLR_FAILED";
 export function fetchInitialData() {
     return (dispatch) => {
         fetchFiltersFromCache(dispatch);
-        fetchFiltersFromSolr(dispatch);
+        fetchFacetsValues(dispatch);
     };
 }
 
 function fetchFiltersFromCache(dispatch) {
     dispatch(fetchDataRequest());
-    const url = "./api/v1/resource/filter";
+    const url = "./api/v1/prefetch";
     return fetchJson(url)
         .then((payload) => dispatch(fetchDataSuccess(payload.json.json)))
         .catch((error) => dispatch(fetchDataFailed(error)));
@@ -57,9 +57,9 @@ function fetchDataFailed(error) {
     });
 }
 
-function fetchFiltersFromSolr(dispatch) {
+function fetchFacetsValues(dispatch) {
     dispatch(fetchSolrRequest());
-    const url = constructQueryUrl();
+    const url = "./api/v1/facets";
     fetchJson(url)
         .then((payload) => dispatch(fetchSolrSuccess(payload.json)))
         .catch((error) => dispatch(fetchSolrFailed(error)));
@@ -71,25 +71,11 @@ function fetchSolrRequest() {
     });
 }
 
-function constructQueryUrl() {
-    const url = "./api/v1/solr/query?" +
-        "facet.field=keyword&" +
-        "facet.field=formatName&" +
-        "facet.field=publisherName&" +
-        "facet.field=theme&" +
-        "facet=true&" +
-        "facet.mincount=1&" +
-        "q=*:*&" +
-        "facet.limit=-1&" +
-        "rows=0";
-    return url;
-}
-
 function fetchSolrSuccess(response) {
-    const publishers = parseFacetFromSolrResponse(response, "publisherName");
-    const themes = parseFacetFromSolrResponse(response, "theme");
-    const keywords = parseFacetFromSolrResponse(response, "keyword");
-    const formats = parseFacetFromSolrResponse(response, "formatName");
+    const publishers = nameCountArrayToJsonLd(response["publishers"]);
+    const themes = nameCountArrayToJsonLd(response["themes"]);
+    const keywords = nameCountArrayToJsonLd(response["keywords"]);
+    const formats = nameCountArrayToJsonLd(response["formats"]);
     return addLoaderStatusOff({
         "type": FETCH_INITIAL_SOLR_SUCCESS,
         "$publishers": publishers,

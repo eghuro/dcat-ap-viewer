@@ -48,7 +48,6 @@ module.exports = {
             "GOOGLE_TAG_MANAGER_ID": asString(config["googleTagManager"]),
             "PAGE_TITLE_PREFIX": asString(config["client"]["titlePrefix"]),
             "PAGE_TITLE_SUFFIX": asString(config["client"]["titleSuffix"]),
-            "REPOSITORY_TYPE": asString(getRepositoryType()),
             "URL_PREFIX": asString(config["client"]["urlPrefix"]),
             "URL_BASE": asString(config["client"]["urlBase"]),
             "DEREFERENCE_IRI": asString(config["client"]["dereferenceIri"])
@@ -62,13 +61,4 @@ function asString(value) {
 
 function isNotEmpty(value) {
     return value !== undefined && value.length > 1;
-}
-
-function getRepositoryType() {
-    const couchdb = config["data"]["couchdb"];
-    if (couchdb !== null && couchdb.length > 0) {
-        return "COUCHDB";
-    } else {
-        return "SPARQL";
-    }
 }

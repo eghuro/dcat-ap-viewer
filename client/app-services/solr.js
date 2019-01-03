@@ -10,3 +10,16 @@ export function parseFacetFromSolrResponse(payload, facetName) {
     }
     return output;
 }
+
+
+export function nameCountArrayToJsonLd(data) {
+    const output = [];
+    for (let index = 0; index < data.length; index += 2) {
+        output.push({
+            "@id": data[index],
+            "label": data[index],
+            "count": data[index + 1]
+        });
+    }
+    return output;
+}

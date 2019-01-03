@@ -12,22 +12,12 @@ export const fetchLabel = (iri) => {
             return;
         }
         fetchJson(url).then((data) => {
-            const jsonld = normalizeJsonLd(data.json);
-            dispatch(fetchLabelSuccess(jsonld));
+            dispatch(fetchLabelSuccess({"@graph": data.json["jsonld"]}));
         }).catch((error) => {
             console.warn("Label request failed for: ", iri, " error:", error);
         });
     }
 };
-
-// TODO Extract to another layer.
-function normalizeJsonLd(data) {
-    if (REPOSITORY_TYPE === "COUCHDB") {
-        return {"@graph": data["jsonld"]};
-    } else {
-        return data;
-    }
-}
 
 function fetchLabelSuccess(jsonld) {
     return {

@@ -25,7 +25,7 @@ import {
     STATUS_FETCHED
 } from "@/app-services/http-request";
 import {parse as parseQueryString} from "query-string";
-import {parseFacetFromSolrResponse} from "@/app-services/solr";
+import {nameCountArrayToJsonLd} from "@/app-services/solr";
 
 // TODO Isolate changes to minimize rendering.
 //  For example paginator re-render on every change of string query.
@@ -95,25 +95,12 @@ function onListRequest(state) {
 
 function onListRequestSuccess(state, action) {
     const json = action.data;
-
-    const keywords = parseFacetFromSolrResponse(json, "keyword");
-    keywords.sort((left, right) => right.count - left.count);
-
-    const publishers = parseFacetFromSolrResponse(json, "publisherName");
-    publishers.sort((left, right) => right.count - left.count);
-
-    const formats = parseFacetFromSolrResponse(json, "formatName");
-    formats.sort((left, right) => right.count - left.count);
-
-    const themes = parseFacetFromSolrResponse(json, "theme");
-    themes.sort((left, right) => right.count - left.count);
-
     return {
         ...state,
         "data": {
             "status": STATUS_FETCHED,
-            "datasetCount": json.response.numFound,
-            "datasets": json.response.docs.map((item) => ({
+            "datasetCount": json.metadata.found,
+            "datasets": json.data.map((item) => ({
                 "id": item.id,
                 "iri": item.iri,
                 "modified": item.modified,
@@ -126,10 +113,10 @@ function onListRequestSuccess(state, action) {
                 "format": item.formatName === undefined ? [] : item.formatName,
                 "license": item.license
             })),
-            "keyword": keywords,
-            "publisher": publishers,
-            "format": formats,
-            "theme": themes
+            "keyword": nameCountArrayToJsonLd(json.facets.keywords),
+            "publisher": nameCountArrayToJsonLd(json.facets.publishers),
+            "format": nameCountArrayToJsonLd(json.facets.formats),
+            "theme": nameCountArrayToJsonLd(json.facets.themes)
         }
     };
 }

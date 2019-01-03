@@ -2,7 +2,7 @@ import {
     addLoaderStatusOn,
     addLoaderStatusOff
 } from "app-ui/loading-indicator/index";
-import {fetchPublishersFromSolr} from "./publisher-api";
+import {fetchPublishers} from "./publisher-api";
 import reducer from "./publisher-reducer";
 
 export const FETCH_PUBLISHERS_REQUEST = "FETCH_PUBLISHERS_REQUEST";
@@ -16,7 +16,7 @@ export function fetchPublisherList() {
             return;
         }
         dispatch(fetchRequest());
-        fetchPublishersFromSolr()
+        fetchPublishers()
             .then((payload) => dispatch(fetchSuccess(payload)))
             .catch((error) => dispatch(fetchFailed(error)));
     };
