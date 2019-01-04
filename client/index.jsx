@@ -13,9 +13,6 @@ import {initialize as initializeStrings} from "@/app-services/strings";
 
 import "@/index.style.css";
 
-import {normalize} from "../server/jsonld/normalize";
-
-
 const history = createHistory();
 const store = createStore(history);
 initializeStrings();
