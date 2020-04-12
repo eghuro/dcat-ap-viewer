@@ -16,6 +16,15 @@ export class Response {
 }
 
 export function fetchJson(url: string): Promise<Response> {
+  return fetch("https://dev.nkod.opendata.cz/" + url, {
+    "method": "GET",
+    "headers": {
+      "Accept": "application/json",
+    },
+  }).catch(failureToResponse).then(json);
+}
+
+export function fetchJsonDirect(url: string): Promise<Response> {
   return fetch(url, {
     "method": "GET",
     "headers": {
