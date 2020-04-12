@@ -24,6 +24,8 @@ export const ELEMENT_DISTRIBUTION_DETAIL = "element-distribution";
 
 export const ELEMENT_DATA_SERVICE_DETAIL = "element-data-service";
 
+export const ELEMENT_RELATED_DATASET_LIST = "element-related-dataset-list";
+
 export const ELEMENT_HEADER = "element-header";
 
 export const ELEMENT_FOOTER = "element-footer";

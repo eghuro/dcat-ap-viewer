@@ -22,12 +22,14 @@ import {
   fetchQualityDataset,
   selectDatasetQuality,
 } from "../../../../client/quality/dataset";
+import {fetchRelatedDatasets, selectRelated} from "../../../../client/relationship";
 import withStatus from "../../user-iterface/status";
 import {selectFormData} from "../../../../client/form/dataset";
 import {
   DATASET_DETAIL_FORM_LINKS,
   DATASET_DETAIL_KEYWORDS,
   DATASET_DETAIL_PROPERTIES,
+  DATASET_DETAIL_RELATIONSHIPS
 } from "../../nkod-component-names";
 // TODO Find out how to make this accessible.
 import {DistributionList} from "../../../../client/distribution/list";
@@ -39,6 +41,7 @@ class DatasetView extends React.PureComponent {
     this.FormLinks = getRegisteredElement(DATASET_DETAIL_FORM_LINKS);
     this.Keywords = getRegisteredElement(DATASET_DETAIL_KEYWORDS);
     this.Properties = getRegisteredElement(DATASET_DETAIL_PROPERTIES);
+    this.Relationships = getRegisteredElement(DATASET_DETAIL_RELATIONSHIPS);
   }
 
   componentDidMount() {
@@ -47,6 +50,7 @@ class DatasetView extends React.PureComponent {
 
   fetchRelatedData() {
     this.props.fetchQuality(this.props.dataset.iri);
+    this.props.fetchRelationships(this.props.dataset.iri);
     const {dataset, fetchLabels} = this.props;
     const toFetch = [
       dataset.publisher,
@@ -67,10 +71,11 @@ class DatasetView extends React.PureComponent {
   render() {
     const {
       t, tUrl, tLabel, tLiteral, dataset, quality,
-      language, openModal, form,
+      language, openModal, form, related
     } = this.props;
     const link = getGlobal(DEREFERENCE_PREFIX) + dataset.iri;
-    const {FormLinks, Keywords, Properties} = this;
+    const {FormLinks, Keywords, Properties, Relationships} = this;
+
     return (
       <div className="container">
         <h1>
@@ -112,6 +117,12 @@ class DatasetView extends React.PureComponent {
           openModal={openModal}
         />
         <hr/>
+        <Relationships
+            t={t} /*translations*/
+            relationship={related}
+            language={language}
+        />
+        <hr/>
         <DistributionList/>
       </div>
     )
@@ -131,11 +142,13 @@ DatasetView.propTypes = {
   "tLiteral": PropTypes.func.isRequired,
   "fetchLabels": PropTypes.func.isRequired,
   "fetchQuality": PropTypes.func.isRequired,
+  "fetchRelationships": PropTypes.func.isRequired,
   "dataset": PropTypes.object.isRequired,
   "language": PropTypes.string.isRequired,
   "quality": PropTypes.object,
   "openModal": PropTypes.func.isRequired,
   "form": PropTypes.object,
+  "related": PropTypes.object.isRequired,
 };
 
 register({
@@ -148,9 +161,11 @@ register({
     "language": selectLanguage(state),
     "quality": selectDatasetQuality(state),
     "form": selectFormData(state),
+    "related": selectRelated(state),
   }), (dispatch) => ({
     "fetchLabels": (iris) => dispatch(fetchLabels(iris)),
     "fetchQuality": (iri) => dispatch(fetchQualityDataset(iri)),
+    "fetchRelationships": (iri) => dispatch(fetchRelatedDatasets(iri)),
     "openModal": (body) => dispatch(showModal(undefined, body)),
   }))(withStatus(DatasetView)),
 });

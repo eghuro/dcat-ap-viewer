@@ -24,6 +24,10 @@ export const FETCH_DATASET_SUCCESS =
 export const FETCH_DATASET_FAILED =
   "FETCH_DATASET_FAILED";
 
+export const FETCH_RELATED_DATASETS = "FETCH_RELATED_DATASETS";
+export const FETCH_RELATED_DATASETS_SUCCESS = "FETCH_RELATED_DATASETS_SUCCESS";
+export const FETCH_RELATED_DATASETS_FAILED = "FETCH_RELATED_DATASETS_FAILED";
+
 export const FETCH_DISTRIBUTION =
   "FETCH_DISTRIBUTION";
 export const FETCH_DISTRIBUTION_SUCCESS =
@@ -113,7 +117,7 @@ export function fetchDatasetList(query: DatasetListQuery) {
 }
 
 /**
- * Execute given function and emmit actions.
+ * Execute given function and emit actions.
  */
 function callApi(
   call: (lang: string) => FlatJsonLdPromise,
@@ -207,6 +211,15 @@ export function fetchInitialData() {
     FETCH_INITIAL_DATA,
     FETCH_INITIAL_DATA_SUCCESS,
     FETCH_INITIAL_DATA_FAILED);
+}
+
+export function fetchRelatedDatasets(iri: string) {
+  return callApi(
+      (lang) => apiAdapter.fetchRelatedDatasets(lang, iri),
+      FETCH_RELATED_DATASETS,
+      FETCH_RELATED_DATASETS_SUCCESS,
+      FETCH_RELATED_DATASETS_FAILED,
+      {"iri": iri});
 }
 
 export function fetchQualityDataset(iri: string) {

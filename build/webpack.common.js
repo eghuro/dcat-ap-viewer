@@ -13,6 +13,8 @@ const constants = {
     JSON.stringify(configuration.client.title.suffix),
   "DEF_FORM_URL":
     JSON.stringify(configuration.client.form_url),
+  "DEF_INDEX_URL":
+    JSON.stringify(configuration.client.index_url),
   "DEF_URL_BASE":
     JSON.stringify(configuration.client.url.base),
   "DEF_DEREFERENCE_PREFIX":

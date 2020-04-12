@@ -10,6 +10,8 @@ declare var DEF_PAGE_TITLE_SUFFIX: string;
 
 declare var DEF_FORM_URL: string;
 
+declare var DEF_INDEX_URL: string;
+
 declare var DEF_URL_BASE: string;
 
 declare var DEF_DEREFERENCE_PREFIX: string;
@@ -21,6 +23,8 @@ export const PAGE_TITLE_PREFIX = "PAGE_TITLE_PREFIX";
 export const PAGE_TITLE_SUFFIX = "PAGE_TITLE_SUFFIX";
 
 export const FORM_URL = "FORM_URL";
+
+export const INDEX_URL = "INDEX_URL";
 
 export const BASE_CLIENT_URL = "BASE_CLIENT_URL";
 
@@ -39,6 +43,7 @@ const values: { [key: string]: any } = {
   [PAGE_TITLE_PREFIX]: DEF_PAGE_TITLE_PREFIX,
   [PAGE_TITLE_SUFFIX]: DEF_PAGE_TITLE_SUFFIX,
   [FORM_URL]: DEF_FORM_URL,
+  [INDEX_URL]: DEF_INDEX_URL,
   [BASE_CLIENT_URL]: DEF_URL_BASE,
   [DEREFERENCE_PREFIX]: DEF_DEREFERENCE_PREFIX,
   [PAGE_SIZE_DEFAULT]: 10,

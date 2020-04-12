@@ -48,6 +48,8 @@ export interface Api {
 
   fetchCatalogList(language: string): FlatJsonLdPromise;
 
+  fetchRelatedDatasets(language: string, iri: string): FlatJsonLdPromise;
+
 }
 
 export function createApiImplementation(): Api {

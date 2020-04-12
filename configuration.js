@@ -27,6 +27,7 @@ const YAML  = require("yaml");
         "suffix": configuration["client"]["title-suffix"] || "",
       },
       "form_url": configuration["client"]["form-url"],
+      "index_url": configuration["client"]["index-url"],
       "url": {
         "base": configuration["client"]["url-base"],
       },

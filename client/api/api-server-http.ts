@@ -1,6 +1,8 @@
 import {Api, DatasetListQuery, FlatJsonLdPromise} from "./api-interface";
-import {fetchJson, ErrorType} from "./fetch-api";
+import {fetchJson, fetchJsonDirect, ErrorType} from "./fetch-api";
 import {flatten} from "jsonld";
+import {getGlobal, INDEX_URL} from "../app/globals";
+import {JsonLdEntity} from "../jsonld";
 
 class HttpApi implements Api {
 
@@ -107,6 +109,25 @@ class HttpApi implements Api {
       url += "?language=" + language;
     }
     return fetchJsonLd(url);
+  }
+
+  fetchRelatedDatasets(language: string, iri: string): FlatJsonLdPromise {
+    let url = getGlobal(INDEX_URL) + "/api/v1/query/dataset?iri=" + iri;
+    if (language) {
+      url += "?language=" + language
+    }
+
+    return new Promise((accept, reject) => {
+      fetchJsonDirect(url).then(response => { //FIXME: this is so as not to translate to dev.nkod.opendata.cz
+        if (response.data) {
+          accept(response.data);
+        } else {
+          reject({"code": response.error});
+        }
+      }).catch(error => {
+        reject(error);
+      });
+    });
   }
 
 }

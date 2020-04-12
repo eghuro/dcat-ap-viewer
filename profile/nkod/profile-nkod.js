@@ -30,6 +30,7 @@ import "./keyword/list/keyword-list"
 import "./distribution/list/distribution-list";
 import "./distribution/detail/distribution-detail";
 import "./distribution/detail/data-service-detail";
+import "./relationship/relationship-list";
 
 import "./style.css";
 import "./style-mode-default.css";
