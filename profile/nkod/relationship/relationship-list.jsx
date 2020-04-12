@@ -4,8 +4,8 @@ import {PropTypes} from "prop-types";
 import React from "react";
 
 function Label({item, language}) {
-    if ("title" in item) {
-        return <a href={item.iri}>{item.title[language]}</a>
+    if ("label" in item) {
+        return <a href={item.iri}>{item.label[language]}</a>
     } else {
         return <a href={item.iri}>{item.iri}</a>
     }
@@ -17,7 +17,7 @@ function ProfileListing({selector, labels, relationship, language}) {
             <div>
                 {labels[language]}
                 <ul>
-                    {relationship.index.profile.concepts.map((item) =><li key={item.iri}><Label item={item} language={language}/></li>)}
+                    {relationship.index.profile[selector].map((item) =><li key={item.iri}><Label item={item} language={language}/></li>)}
                 </ul>
             </div>
         );
