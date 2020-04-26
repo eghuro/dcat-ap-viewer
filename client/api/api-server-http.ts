@@ -112,10 +112,12 @@ class HttpApi implements Api {
   }
 
   fetchRelatedDatasets(language: string, iri: string): FlatJsonLdPromise {
-    let url = getGlobal(INDEX_URL) + "/api/v1/query/dataset?iri=" + iri;
+    let url = getGlobal(INDEX_URL) + "/api/v1/query/dataset?";
     if (language) {
-      url += "?language=" + language
+      url += "language=" + language + "&"
     }
+
+    url += "iri=" + iri;
 
     return new Promise((accept, reject) => {
       fetchJsonDirect(url).then(response => { //FIXME: this is so as not to translate to dev.nkod.opendata.cz
