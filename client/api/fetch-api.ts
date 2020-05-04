@@ -20,7 +20,7 @@ export function fetchJson(url: string): Promise<Response> {
     "method": "GET",
     "headers": {
       "Accept": "application/json",
-    },
+    }
   }).catch(failureToResponse).then(json);
 }
 
